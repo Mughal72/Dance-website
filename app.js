@@ -4,7 +4,8 @@ const app = express();
 const mongoose = require('mongoose');
 const bodyparser = require("body-parser");
 
-mongoose.connect('mongodb://localhost/contactDance');
+// Connect to MongoDB database
+mongoose.connect('mongodb://localhost/contactDance', { useNewUrlParser: true, useUnifiedTopology: true });
 const port = 80;
 
 
@@ -22,7 +23,7 @@ var Contact = mongoose.model('Contact', contactSchema);
 
 // Express specific stuff
 app.use('/static', express.static('static')); // for serving static files
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded())
 
 
 // pug specific stuff
