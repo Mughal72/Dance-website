@@ -1,8 +1,24 @@
 const express = require("express");
 const path = require("path");
-const fs = require("fs");
 const app = express();
-const port = 80;
+const mongoose = require('mongoose');
+const bodyparser = require("body-parser");
+
+mongoose.connect('mongodb://localhost/contactDance', {useNewUrlParser: true});
+const port = 8000;
+
+
+// Define mongoose schema
+var contactSchema = new mongoose.Schema({
+    name: String,
+    phone: String,
+    email: String,
+    address: String,
+    desc: String
+  });
+
+var Contact = mongoose.model('Contact', contactSchema);
+
 
 // Express specific stuff
 app.use('/static', express.static('static')); // for serving static files
@@ -21,6 +37,20 @@ app.get("/", (req, res) => {
 app.get("/contact", (req, res) => {
     const params = {};
     res.status(200).render('contact.pug', params);
+});
+
+// Handle form submission
+app.post("/contact", (req, res) => {
+    const { name, phone, email, address, desc } = req.body;
+    const newContact = new Contact({ name, phone, email, address, desc });
+    newContact.save()
+        .then(() => {
+            res.status(200).send("Your message has been successfully submitted.");
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send("An error occurred while processing your request.");
+        });
 });
 
 // start the server
